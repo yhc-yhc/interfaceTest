@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <title>interface</title>
+  <!-- <link rel="stylesheet" href="bootstrap.min.css"> -->
+  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <style>
+    .table-striped>tbody>tr:nth-child(odd)>td,
+    .table-striped>tbody>tr:nth-child(odd)>th {
+      background-color: #dddfe0;
+    }
+    .table-bordered > tbody > tr > td {
+      border: 0.5px solid #000000;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid" ng-controller="bodyCtrl">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <div class="panel-title">
+
+            <div>
+              <form class="form-inline"  ng-controller="serverCtrl">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                      <input type="checkbox" name="server" ng-checked="data.productServer == data.autoServer" ng-click="changeServer(data.productServer)">
+                      product server：
+                    </div>
+                    <p class="form-control">{{data.productServer}}</p>
+
+                    <div class="input-group-addon">
+                      <input type="checkbox" name="server" ng-checked="data.testServer == data.autoServer" ng-click="changeServer(data.testServer)">
+                      test server：
+                    </div>
+                    <p class="form-control">{{data.testServer}}</p>
+
+                    <div class="input-group-addon">token</div>
+                    <p class="form-control" style="width: 280px">{{data.token}}</p>
+                  </div>
+                </div>
+
+                <span class="pull-right">
+                  <a class="btn btn-default btn-xs" href="http://gitlab.captain.bengjiujie.com/laohaowan/document/wikis/API-Changelog" target="_blank">API change log</a>
+                  <a href="" class="btn btn-xs btn-danger" ng-click="sendAllReq()">Send All</a>
+                </span>
+              </form>
+            </div>
+          </div>
+
+        </div>
+        <table class="table table-bordered table-striped" ng-controller="checkUserCtrl">
+          <tr>
+            <td width="50px">
+              <p class="text-capitalize text-danger"><strong>normal user login</strong>  <span class="text-lowercase badge">{{data.user.method}}</span></p>
+              {{data.sectionParams.user.prex + "." +data.autoServer + data.user.url}}
+            </td>
+            <td width="300px">
+              <!--<div class="input-group input-group-sm">-->
+                <!--<span class="input-group-addon">account :</span>-->
+                <!--<input ng-model="data.user.data.account" type="text" class="form-control">-->
+              <!--</div>-->
+              <!--ng-show="{{key != 'account'}}"-->
+              <div ng-repeat="(key, val) in data.user.data">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <input ng-model="data.user.data[key]" type="text" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{data.user.result | json}}</textarea>
+            </td>
+            <td><button class="btn btn-warning btn-xs" ng-click="login('user')">login</button></td>
+          </tr>
+          <tr>
+            <td width="50px">
+              <p class="text-capitalize text-danger"><strong>normal user login</strong>  <span class="text-lowercase badge">{{data.admin.method}}</span></p>
+              {{data.sectionParams.user.prex + "." +data.autoServer + data.admin.url}}
+            </td>
+            <td width="300px">
+              <div ng-repeat="(key, val) in data.admin.data">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <input ng-model="data.admin.data[key]" type="text" class="form-control">
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{data.admin.result | json}}</textarea>
+            </td>
+            <td width="5%"><button class="btn btn-warning btn-xs" ng-click="login('admin')">login</button></td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info" ng-controller="userCtrl">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <span class="lead"><b><a href="" ng-click="togglePannel('user')">user</a></b></span>
+            <span class="pull-right">
+              <a href="" class="btn btn-xs btn-danger" ng-click="sendBathReq('user')"> sendAll</a>
+            </span>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-striped" ng-show="data.sectionParams.user.hiddenPanel">
+          <tr ng-repeat="interface in data.sectionParams.user.interface">
+            <td width="10px">
+              {{$index+1}}
+            </td>
+            <td width="50px">
+              <p class="text-capitalize text-danger"><strong>{{interface.text}}</strong>  <span class="text-lowercase badge">{{interface.method}}</span></p>
+              {{data.sectionParams.user.prex + "." +data.autoServer + interface.url}}
+            </td>
+            <td width="300px">
+              <div  ng-repeat="(key, val) in interface.data">
+                <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <textarea json-text rows="1" class="form-control" cols="2" ng-model="interface.data[key]"></textarea>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{interface.result | json}}</textarea>
+            </td>
+            <td width="5%" class="text-center"><a href="" class="btn btn-xs" ng-click="sendReq(interface)">send</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info" ng-controller="adminCtrl">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <span class="lead"><b><a href="" ng-click="togglePannel('admin')">admin</a></b></span>
+            <span class="pull-right">
+              <a href="" class="btn btn-xs btn-danger" ng-click="sendBathReq('admin')">sendAll</a>
+            </span>
+          </div>
+        </div>
+        <table class="table table-bordered table-striped" ng-show="data.sectionParams.admin.hiddenPanel">
+          <tr ng-repeat="interface in data.sectionParams.admin.interface">
+            <td width="10px">
+              {{$index+1}}
+            </td>
+            <td width="50px">
+              <p class="text-capitalize text-danger"><strong>{{interface.text}}</strong>  <span class="text-lowercase badge">{{interface.method}}</span></p>
+              {{data.sectionParams.admin.prex + "." +data.autoServer + interface.url}}
+            </td>
+            <td width="300px">
+              <div  ng-repeat="(key, val) in interface.data">
+                <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <textarea json-text rows="1" class="form-control" cols="2" ng-model="interface.data[key]"></textarea>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{interface.result | json}}</textarea>
+            </td>
+            <td width="5%" class="text-center"><a href="" class="btn btn-xs" ng-click="sendReq(interface)">send</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info" ng-controller="materialCtrl">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <span class="lead"><b><a href="" ng-click="togglePannel('material')">material</a></b></span>
+            <span class="pull-right">
+              <a href="" class="btn btn-xs btn-danger" ng-click="sendBathReq('material')">sendAll</a>
+            </span>
+          </div>
+        </div>
+        <table class="table table-bordered table-striped" ng-show="data.sectionParams.material.hiddenPanel">
+          <tr ng-repeat="interface in data.sectionParams.material.interface">
+            <td width="10px">
+              {{$index+1}}
+            </td>
+            <td width="50px">
+              <p class="text-capitalize text-danger"><strong>{{interface.text}}</strong>  <span class="text-lowercase badge">{{interface.method}}</span></p>
+              {{data.sectionParams.material.prex + "." +data.autoServer + interface.url}}
+            </td>
+            <td width="300px">
+              <div  ng-repeat="(key, val) in interface.data">
+                <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <textarea json-text rows="1" class="form-control" cols="2" ng-model="interface.data[key]"></textarea>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{interface.result | json}}</textarea>
+            </td>
+            <td width="5%" class="text-center"><a href="" class="btn btn-xs" ng-click="sendReq(interface)">send</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info" ng-controller="radioCtrl">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <span class="lead"><b><a href="" ng-click="togglePannel('radio')">radio</a></b></span>
+            <span class="pull-right">
+              <a href="" class="btn btn-xs btn-danger" ng-click="sendBathReq('radio')">sendAll</a>
+            </span>
+          </div>
+        </div>
+        <table class="table table-bordered table-striped" ng-show="data.sectionParams.radio.hiddenPanel">
+          <tr ng-repeat="interface in data.sectionParams.radio.interface">
+            <td width="10px">
+              {{$index+1}}
+            </td>
+            <td width="50">
+              <p class="text-capitalize text-danger"><strong>{{interface.text}}</strong>  <span class="text-lowercase badge">{{interface.method}}</span></p>
+              {{data.sectionParams.radio.prex + "." +data.autoServer + interface.url}}
+            </td>
+            <td width="300px">
+              <div  ng-repeat="(key, val) in interface.data">
+                <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <textarea json-text rows="1" class="form-control" cols="2" ng-model="interface.data[key]"></textarea>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{interface.result | json}}</textarea>
+            </td>
+            <td width="5%" class="text-center"><a href="" class="btn btn-xs" ng-click="sendReq(interface)">send</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info" ng-controller="chatCtrl">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <span class="lead"><b><a href="" ng-click="togglePannel('chat')">chat</a></b></span>
+            <span class="pull-right">
+              <a href="" class="btn btn-xs btn-danger" ng-click="sendBathReq('chat')">sendAll</a>
+            </span>
+          </div>
+        </div>
+        <table class="table table-bordered table-striped" ng-show="data.sectionParams.chat.hiddenPanel">
+          <tr ng-repeat="interface in data.sectionParams.chat.interface">
+            <td width="10px">
+              {{$index+1}}
+            </td>
+            <td width="50px">
+              <div class="text-capitalize text-danger"><strong>{{interface.text}}</strong><span class="text-lowercase badge">{{interface.method}}</span></div>
+              {{data.sectionParams.chat.prex + "." +data.autoServer + interface.url}}
+            </td>
+            <td width="300px">
+              <div  ng-repeat="(key, val) in interface.data">
+                <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                  <span class="input-group-addon">{{key}} :</span>
+                  <textarea json-text rows="1" class="form-control" cols="2" ng-model="interface.data[key]"></textarea>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="form-group has-error" ng-show="interface.error">
+                <p class="bg-danger">has error!!!</p>
+              </div>
+              <textarea rows="4" cols="60" style="border: 0">{{interface.result | json}}</textarea>
+            </td>
+            <td width="5%" class="text-center"><a href="" class="btn btn-xs" ng-click="sendReq(interface)">send</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <span class="lead"><b>file upload</b></span>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-striped">
+          <tr ng-controller="UploaderImageController">
+            <td width="10%">
+              <div class="text-capitalize text-danger"><strong>upload imge</strong><span class="text-lowercase badge">POST</span></div>
+              {{prex+data.autoServer+url}}
+            </td>
+            <td width="40%">
+              <input type="file" file-model="myFile"/>
+              <div class="col-md-12">
+                <img ng-src="{{imageSrc}}" style="max-width:300px;max-height:300px;margin:0 auto;display:block;" />
+              </div>
+            </td>
+            <td width="30%">
+              <textarea rows="4" cols="60" style="border: 0">{{result | json}}</textarea>
+            </td>
+            <td width="5%">
+              <button class="btn btn-xs btn-danger" ng-click="upload()">upload</button>
+            </td>
+          </tr>
+
+          <tr ng-controller="UploaderVoiceController">
+            <td width="10%">
+              <div class="text-capitalize text-danger"><strong>upload VOICE</strong><span class="text-lowercase badge">POST</span></div>
+              {{prex+data.autoServer+url}}
+            </td>
+            <td width="40%">
+              <input type="file" file-model="myFile"/>
+            </td>
+            <td width="30%">
+              <textarea rows="4" cols="60" style="border: 0">{{result | json}}</textarea>
+            </td>
+            <td width="5%">
+              <button class="btn btn-danger btn-xs" ng-click="upload()">upload</button>
+            </td>
+          </tr>
+
+          <tr ng-controller="UploaderImageControllerToChat">
+            <td width="10%">
+              <div class="text-capitalize text-danger"><strong>upload IMAGE to chat</strong><span class="text-lowercase badge">POST</span></div>
+              {{prex+data.autoServer+url}}
+            </td>
+            <td width="40%">
+              <input type="file" file-model="myFile"/>
+              <img ng-src="{{imageSrc}}" style="max-width:300px;max-height:300px;margin:0 auto;display:block;" />
+              <div class="col-md-12">
+                <div  ng-repeat="(key, val) in params">
+                  <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                    <span class="input-group-addon">{{key}} :</span>
+                    <textarea json-text rows="1" class="form-control" cols="2" ng-model="params[key]"></textarea>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td width="30%">
+              <textarea rows="4" cols="60" style="border: 0">{{result | json}}</textarea>
+            </td>
+            <td width="5%">
+              <button class="btn btn-danger btn-xs" ng-click="upload()">upload</button>
+            </td>
+          </tr>
+
+          <tr ng-controller="UploaderVoiceControllerToChat">
+            <td width="10%">
+              <div class="text-capitalize text-danger"><strong>upload VOICE to chat</strong><span class="text-lowercase badge">POST</span></div>
+              {{prex+data.autoServer+url}}
+            </td>
+            <td width="40%">
+              <input type="file" file-model="myFile"/>
+              <div class="col-md-12">
+                <div  ng-repeat="(key, val) in params">
+                  <div class="input-group input-group-sm" ng-show="{{key != 'token'}}">
+                    <span class="input-group-addon">{{key}} :</span>
+                    <textarea json-text rows="1" class="form-control" cols="2" ng-model="params[key]"></textarea>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td width="30%">
+              <textarea rows="4" cols="60" style="border: 0">{{result | json}}</textarea>
+            </td>
+            <td width="5%">
+              <button class="btn btn-danger btn-xs" ng-click="upload()">upload</button>
+            </td>
+          </tr>
+
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+<!-- <script type="text/javascript" src="angular.min.js"></script> -->
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="service.js"></script>
+<script type="text/javascript" src="controller.js"></script>
+</body>
+</html>
