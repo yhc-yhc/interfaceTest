@@ -4,6 +4,7 @@ use angular to test the interface  of backend
 
 #
 https://segmentfault.com/a/1190000004057022 use node.js to upload and download
+#
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,7 +17,7 @@ https://segmentfault.com/a/1190000004057022 use node.js to upload and download
     <button type="submit">新建任务</button>
   </form>
 
-  <a href="download/kkk">下载文件</a>
+  <a href="#">下载文件</a>
 </body>
 </html>
 
